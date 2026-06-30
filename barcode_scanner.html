@@ -1,1 +1,498 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>바코드 기록</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --accent: #22c55e;
+    --accent-dark: #16a34a;
+    --danger: #ef4444;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: #334155;
+  }
 
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 10px 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  main {
+    flex: 1;
+    min-height: 0;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+    overflow-y: auto;
+  }
+
+  #reader {
+    width: 100%;
+    max-height: 38vh;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    background: #000;
+    flex-shrink: 0;
+  }
+
+  #reader video {
+    width: 100% !important;
+    max-height: 38vh;
+    object-fit: cover;
+  }
+
+  .scan-toggle {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-start {
+    background: var(--accent);
+    color: #05210f;
+  }
+
+  .btn-stop {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .card-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .product-name {
+    font-size: 22px;
+    font-weight: 700;
+    min-height: 30px;
+  }
+
+  .product-barcode {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .status-error {
+    color: var(--danger);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .qty-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .qty-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #0b1220;
+    color: var(--text);
+    font-size: 24px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .qty-input {
+    flex: 1;
+    height: 52px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    background: #0b1220;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+  }
+
+  .save-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: var(--accent);
+    color: #05210f;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    flex-shrink: 0;
+  }
+
+  .save-btn:active { transform: scale(0.98); }
+
+  .save-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--accent);
+    color: #05210f;
+    padding: 14px 22px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 15px;
+    opacity: 0;
+    transition: opacity 0.25s, transform 0.25s;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast.error {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  .history {
+    margin-top: 0;
+    flex-shrink: 0;
+  }
+
+  .history-title {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .history-item:last-child { border-bottom: none; }
+
+  .history-name { font-weight: 600; }
+  .history-qty { color: var(--accent); font-weight: 700; }
+
+  .hint {
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 2px 0;
+    flex-shrink: 0;
+  }
+
+  .manual-toggle {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .manual-input {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #0b1220;
+    color: var(--text);
+    display: none;
+  }
+
+  .manual-input.show { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📦 바코드 기록</h1>
+</header>
+
+<main>
+  <div id="reader"></div>
+
+  <div class="scan-toggle">
+    <button class="btn btn-start" id="startBtn">스캔 시작</button>
+    <button class="btn btn-stop" id="stopBtn" style="display:none;">스캔 중지</button>
+  </div>
+
+  <div class="manual-toggle" id="manualToggle">바코드 숫자 직접 입력하기</div>
+  <input type="text" class="manual-input" id="manualInput" placeholder="바코드 숫자 입력 후 확인" inputmode="numeric">
+
+  <div class="card">
+    <div class="card-label">인식된 상품</div>
+    <div class="product-name" id="productName">스캔 대기 중</div>
+    <div class="product-barcode" id="productBarcode"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">수량</div>
+    <div class="qty-section">
+      <button class="qty-btn" id="qtyMinus">−</button>
+      <input type="number" class="qty-input" id="qtyInput" value="1" min="1">
+      <button class="qty-btn" id="qtyPlus">+</button>
+    </div>
+  </div>
+
+  <button class="save-btn" id="saveBtn" disabled>저장하기</button>
+
+  <div class="history" id="historyWrap" style="display:none;">
+    <div class="history-title">최근 기록</div>
+    <div id="historyList"></div>
+  </div>
+
+  <div class="hint">카메라가 안 열리면 브라우저 권한에서 카메라 접근을 허용해주세요.</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz9iIsdcgnT00EEtJz0z59iPDIm7IsJRfCNKfBgu9vf-mP8qGSqlbUAOjDHXK05Nb19/exec";
+
+let html5QrCode = null;
+let currentBarcode = null;
+let currentName = null;
+let isLookingUp = false;
+let history = [];
+
+const productNameEl = document.getElementById('productName');
+const productBarcodeEl = document.getElementById('productBarcode');
+const saveBtn = document.getElementById('saveBtn');
+const qtyInput = document.getElementById('qtyInput');
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const toast = document.getElementById('toast');
+const manualToggle = document.getElementById('manualToggle');
+const manualInput = document.getElementById('manualInput');
+const historyWrap = document.getElementById('historyWrap');
+const historyList = document.getElementById('historyList');
+
+function showToast(msg, isError) {
+  toast.textContent = msg;
+  toast.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => { toast.className = 'toast'; }, 2200);
+}
+
+async function lookupBarcode(barcode) {
+  if (isLookingUp) return;
+  isLookingUp = true;
+  productNameEl.textContent = '조회 중...';
+  productBarcodeEl.textContent = barcode;
+  saveBtn.disabled = true;
+
+  try {
+    const res = await fetch(`${WEB_APP_URL}?action=lookup&barcode=${encodeURIComponent(barcode)}`);
+    const data = await res.json();
+
+    if (data.success) {
+      currentBarcode = barcode;
+      currentName = data.name;
+      productNameEl.textContent = data.name;
+      productBarcodeEl.textContent = barcode;
+      saveBtn.disabled = false;
+      if (navigator.vibrate) navigator.vibrate(80);
+    } else {
+      currentBarcode = null;
+      currentName = null;
+      productNameEl.innerHTML = `<span class="status-error">등록되지 않은 상품입니다</span>`;
+      productBarcodeEl.textContent = barcode;
+      saveBtn.disabled = true;
+    }
+  } catch (err) {
+    productNameEl.innerHTML = `<span class="status-error">조회 실패 (인터넷 연결 확인)</span>`;
+    saveBtn.disabled = true;
+  } finally {
+    isLookingUp = false;
+  }
+}
+
+function onScanSuccess(decodedText) {
+  if (decodedText === currentBarcode) return; // 같은 바코드 중복 무시
+  lookupBarcode(decodedText.trim());
+}
+
+function startScanner() {
+  html5QrCode = new Html5Qrcode("reader", {
+    formatsToSupport: [
+      Html5QrcodeSupportedFormats.EAN_13,
+      Html5QrcodeSupportedFormats.EAN_8,
+      Html5QrcodeSupportedFormats.UPC_A,
+      Html5QrcodeSupportedFormats.UPC_E,
+      Html5QrcodeSupportedFormats.CODE_128,
+      Html5QrcodeSupportedFormats.CODE_39,
+      Html5QrcodeSupportedFormats.QR_CODE
+    ],
+    verbose: false
+  });
+  const config = {
+    fps: 15,
+    qrbox: { width: 280, height: 180 },
+    aspectRatio: 1.5
+  };
+
+  html5QrCode.start(
+    { facingMode: "environment" },
+    config,
+    onScanSuccess,
+    () => {}
+  ).then(() => {
+    startBtn.style.display = 'none';
+    stopBtn.style.display = 'block';
+  }).catch((err) => {
+    showToast('카메라를 열 수 없습니다', true);
+    console.error(err);
+  });
+}
+
+function stopScanner() {
+  if (html5QrCode) {
+    html5QrCode.stop().then(() => {
+      html5QrCode.clear();
+      startBtn.style.display = 'block';
+      stopBtn.style.display = 'none';
+    }).catch(() => {});
+  }
+}
+
+startBtn.addEventListener('click', startScanner);
+stopBtn.addEventListener('click', stopScanner);
+
+document.getElementById('qtyMinus').addEventListener('click', () => {
+  const val = Math.max(1, parseInt(qtyInput.value || 1) - 1);
+  qtyInput.value = val;
+});
+
+document.getElementById('qtyPlus').addEventListener('click', () => {
+  const val = parseInt(qtyInput.value || 1) + 1;
+  qtyInput.value = val;
+});
+
+manualToggle.addEventListener('click', () => {
+  manualInput.classList.toggle('show');
+  if (manualInput.classList.contains('show')) manualInput.focus();
+});
+
+manualInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && manualInput.value.trim()) {
+    lookupBarcode(manualInput.value.trim());
+  }
+});
+
+saveBtn.addEventListener('click', async () => {
+  if (!currentBarcode) return;
+  const qty = parseInt(qtyInput.value || 1);
+  if (qty < 1) return;
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = '저장 중...';
+
+  try {
+    const res = await fetch(`${WEB_APP_URL}?action=save&barcode=${encodeURIComponent(currentBarcode)}&quantity=${qty}`);
+    const data = await res.json();
+
+    if (data.success) {
+      showToast(`✓ ${data.name} 누적 ${data.total}개`);
+      history.unshift({ name: data.name, qty: qty, total: data.total });
+      if (history.length > 5) history.pop();
+      renderHistory();
+
+      // 초기화
+      currentBarcode = null;
+      currentName = null;
+      productNameEl.textContent = '스캔 대기 중';
+      productBarcodeEl.textContent = '';
+      qtyInput.value = 1;
+      manualInput.value = '';
+    } else {
+      showToast(data.message || '저장 실패', true);
+    }
+  } catch (err) {
+    showToast('저장 실패 (인터넷 연결 확인)', true);
+  } finally {
+    saveBtn.disabled = true;
+    saveBtn.textContent = '저장하기';
+  }
+});
+
+function renderHistory() {
+  if (history.length === 0) return;
+  historyWrap.style.display = 'block';
+  historyList.innerHTML = history.map(h =>
+    `<div class="history-item"><span class="history-name">${h.name} (+${h.qty})</span><span class="history-qty">누적 ${h.total}개</span></div>`
+  ).join('');
+}
+</script>
+
+</body>
+</html>
