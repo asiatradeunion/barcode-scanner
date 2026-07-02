@@ -130,6 +130,13 @@
     align-self: center;
   }
 
+  .link-btn.danger {
+    color: var(--danger);
+    margin-top: 6px;
+  }
+
+  .link-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
   .manual-row {
     display: flex;
     gap: 8px;
@@ -339,6 +346,8 @@
     <div class="history-title">최근 기록</div>
     <div id="historyList"></div>
   </div>
+
+  <button class="link-btn danger" id="resetBtn">🗑 새 재고조사 시작 (초기화)</button>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -367,6 +376,7 @@ const manualInput = document.getElementById('manualInput');
 const manualConfirm = document.getElementById('manualConfirm');
 const historyWrap = document.getElementById('historyWrap');
 const historyList = document.getElementById('historyList');
+const resetBtn = document.getElementById('resetBtn');
 
 function showToast(msg, isError = false) {
   toastEl.textContent = msg;
@@ -592,6 +602,34 @@ saveBtn.addEventListener('click', async () => {
     showToast('저장 실패 (인터넷 확인)', true);
     saveBtn.disabled = false;
     saveBtn.textContent = '저장하기';
+  }
+});
+
+// 새 재고조사 시작 (기존 기록은 보관 탭으로 옮기고 초기화)
+resetBtn.addEventListener('click', async () => {
+  const ok = confirm('현재까지의 기록을 보관 탭으로 옮기고, 새로 처음부터 시작합니다.\n계속할까요?');
+  if (!ok) return;
+
+  resetBtn.disabled = true;
+  resetBtn.textContent = '초기화 중...';
+
+  try {
+    const res = await fetch(`${WEB_APP_URL}?action=reset`);
+    const data = await res.json();
+
+    if (data.success) {
+      recentHistory = [];
+      historyList.innerHTML = '';
+      historyWrap.style.display = 'none';
+      showToast('새 재고조사를 시작합니다');
+    } else {
+      showToast(data.message || '초기화 실패', true);
+    }
+  } catch {
+    showToast('초기화 실패 (인터넷 확인)', true);
+  } finally {
+    resetBtn.disabled = false;
+    resetBtn.textContent = '🗑 새 재고조사 시작 (초기화)';
   }
 });
 
