@@ -10,22 +10,18 @@
     --bg: #0f172a;
     --card: #1e293b;
     --accent: #22c55e;
-    --accent-dark: #16a34a;
     --danger: #ef4444;
     --text: #f1f5f9;
     --muted: #94a3b8;
     --border: #334155;
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html, body {
-    height: 100%;
-    overflow: hidden;
-  }
+  html { height: 100%; }
 
   body {
-    margin: 0;
+    height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
     background: var(--bg);
     color: var(--text);
@@ -34,35 +30,28 @@
   }
 
   header {
-    padding: 10px 20px;
+    padding: 12px 16px;
     text-align: center;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
 
-  header h1 {
-    font-size: 16px;
-    margin: 0;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
+  header h1 { font-size: 16px; font-weight: 700; }
 
   main {
     flex: 1;
     min-height: 0;
-    padding: 10px 16px;
     display: flex;
     flex-direction: column;
+    padding: 12px 16px;
     gap: 10px;
-    max-width: 480px;
-    width: 100%;
-    margin: 0 auto;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
+  /* 카메라 영역 */
   #reader {
     width: 100%;
-    max-height: 38vh;
     border-radius: 14px;
     overflow: hidden;
     border: 2px solid var(--border);
@@ -70,41 +59,61 @@
     flex-shrink: 0;
   }
 
-  #reader video {
-    width: 100% !important;
-    max-height: 38vh;
-    object-fit: cover;
-  }
+  #reader video { width: 100% !important; display: block; }
 
-  .scan-toggle {
+  /* 스캔 버튼 */
+  .scan-row {
     display: flex;
     gap: 8px;
+    flex-shrink: 0;
   }
 
   .btn {
     flex: 1;
-    padding: 12px;
+    padding: 13px;
     border-radius: 12px;
     border: none;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: transform 0.1s, opacity 0.2s;
+  }
+
+  .btn:active { opacity: 0.8; }
+  .btn-start { background: var(--accent); color: #052e10; }
+  .btn-stop { background: var(--border); color: var(--text); }
+
+  /* 직접 입력 */
+  .manual-row {
+    display: flex;
+    gap: 8px;
     flex-shrink: 0;
   }
 
-  .btn:active { transform: scale(0.97); }
-
-  .btn-start {
-    background: var(--accent);
-    color: #05210f;
-  }
-
-  .btn-stop {
-    background: var(--border);
+  .manual-input {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #0b1220;
     color: var(--text);
   }
 
+  .manual-input::placeholder { color: var(--muted); }
+
+  .manual-confirm {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: none;
+    background: var(--border);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* 상품 카드 */
   .card {
     background: var(--card);
     border-radius: 14px;
@@ -114,55 +123,55 @@
   }
 
   .card-label {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 6px;
+    letter-spacing: 0.06em;
+    margin-bottom: 5px;
   }
 
   .product-name {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
-    min-height: 30px;
+    min-height: 28px;
+    line-height: 1.3;
   }
 
   .product-barcode {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--muted);
-    margin-top: 4px;
-    font-variant-numeric: tabular-nums;
+    margin-top: 3px;
   }
 
-  .status-error {
-    color: var(--danger);
-    font-size: 15px;
-    font-weight: 600;
-  }
+  .status-error { color: var(--danger); font-size: 15px; font-weight: 600; }
 
-  .qty-section {
+  /* 수량 */
+  .qty-row {
     display: flex;
     align-items: center;
     gap: 10px;
   }
 
   .qty-btn {
-    width: 52px;
-    height: 52px;
+    width: 50px;
+    height: 50px;
     border-radius: 12px;
     border: 1px solid var(--border);
     background: #0b1220;
     color: var(--text);
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     cursor: pointer;
+    flex-shrink: 0;
   }
+
+  .qty-btn:active { opacity: 0.7; }
 
   .qty-input {
     flex: 1;
-    height: 52px;
+    height: 50px;
     text-align: center;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     background: #0b1220;
     border: 1px solid var(--border);
@@ -170,107 +179,73 @@
     color: var(--text);
   }
 
+  /* 저장 버튼 */
   .save-btn {
     width: 100%;
-    padding: 14px;
+    padding: 15px;
     border-radius: 14px;
     border: none;
     background: var(--accent);
-    color: #05210f;
+    color: #052e10;
     font-size: 17px;
     font-weight: 800;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
     flex-shrink: 0;
+    transition: opacity 0.15s;
   }
 
-  .save-btn:active { transform: scale(0.98); }
+  .save-btn:active { opacity: 0.85; }
 
   .save-btn:disabled {
-    opacity: 0.4;
+    opacity: 0.35;
     cursor: not-allowed;
   }
 
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--accent);
-    color: #05210f;
-    padding: 14px 22px;
-    border-radius: 999px;
-    font-weight: 700;
-    font-size: 15px;
-    opacity: 0;
-    transition: opacity 0.25s, transform 0.25s;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  .toast.error {
-    background: var(--danger);
-    color: #fff;
-  }
-
-  .history {
-    margin-top: 0;
-    flex-shrink: 0;
-  }
+  /* 최근 기록 */
+  .history-wrap { flex-shrink: 0; }
 
   .history-title {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--muted);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    padding-left: 2px;
   }
 
   .history-item {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
+    align-items: center;
+    padding: 9px 14px;
+    background: var(--card);
+    border-radius: 10px;
+    margin-bottom: 6px;
     font-size: 14px;
   }
 
-  .history-item:last-child { border-bottom: none; }
-
   .history-name { font-weight: 600; }
-  .history-qty { color: var(--accent); font-weight: 700; }
+  .history-qty { color: var(--accent); font-weight: 700; font-size: 13px; }
 
-  .hint {
-    text-align: center;
-    color: var(--muted);
-    font-size: 11px;
-    padding: 2px 0;
-    flex-shrink: 0;
+  /* 토스트 */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--accent);
+    color: #052e10;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 15px;
+    opacity: 0;
+    transition: opacity 0.22s, transform 0.22s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 999;
   }
 
-  .manual-toggle {
-    text-align: center;
-    font-size: 13px;
-    color: var(--muted);
-    text-decoration: underline;
-    cursor: pointer;
-    padding: 4px;
-  }
-
-  .manual-input {
-    width: 100%;
-    padding: 14px;
-    font-size: 16px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: #0b1220;
-    color: var(--text);
-    display: none;
-  }
-
-  .manual-input.show { display: block; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--danger); color: #fff; }
 </style>
 </head>
 <body>
@@ -282,13 +257,16 @@
 <main>
   <div id="reader"></div>
 
-  <div class="scan-toggle">
-    <button class="btn btn-start" id="startBtn">스캔 시작</button>
-    <button class="btn btn-stop" id="stopBtn" style="display:none;">스캔 중지</button>
+  <div class="scan-row">
+    <button class="btn btn-start" id="startBtn">📷 스캔 시작</button>
+    <button class="btn btn-stop" id="stopBtn" style="display:none;">⏹ 스캔 중지</button>
   </div>
 
-  <div class="manual-toggle" id="manualToggle">바코드 숫자 직접 입력하기</div>
-  <input type="text" class="manual-input" id="manualInput" placeholder="바코드 숫자 입력 후 확인" inputmode="numeric">
+  <div class="manual-row">
+    <input type="text" class="manual-input" id="manualInput"
+      placeholder="바코드 번호 직접 입력" inputmode="numeric" autocomplete="off">
+    <button class="manual-confirm" id="manualConfirm">확인</button>
+  </div>
 
   <div class="card">
     <div class="card-label">인식된 상품</div>
@@ -298,7 +276,7 @@
 
   <div class="card">
     <div class="card-label">수량</div>
-    <div class="qty-section">
+    <div class="qty-row">
       <button class="qty-btn" id="qtyMinus">−</button>
       <input type="number" class="qty-input" id="qtyInput" value="1" min="1">
       <button class="qty-btn" id="qtyPlus">+</button>
@@ -307,12 +285,10 @@
 
   <button class="save-btn" id="saveBtn" disabled>저장하기</button>
 
-  <div class="history" id="historyWrap" style="display:none;">
+  <div class="history-wrap" id="historyWrap" style="display:none;">
     <div class="history-title">최근 기록</div>
     <div id="historyList"></div>
   </div>
-
-  <div class="hint">카메라가 안 열리면 브라우저 권한에서 카메라 접근을 허용해주세요.</div>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -320,11 +296,11 @@
 <script>
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz9iIsdcgnT00EEtJz0z59iPDIm7IsJRfCNKfBgu9vf-mP8qGSqlbUAOjDHXK05Nb19/exec";
 
-let html5QrCode = null;
+let scanner = null;
+let scanning = false;
 let currentBarcode = null;
-let currentName = null;
 let isLookingUp = false;
-let history = [];
+let recentHistory = [];
 
 const productNameEl = document.getElementById('productName');
 const productBarcodeEl = document.getElementById('productBarcode');
@@ -332,24 +308,44 @@ const saveBtn = document.getElementById('saveBtn');
 const qtyInput = document.getElementById('qtyInput');
 const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
-const toast = document.getElementById('toast');
-const manualToggle = document.getElementById('manualToggle');
+const toastEl = document.getElementById('toast');
 const manualInput = document.getElementById('manualInput');
+const manualConfirm = document.getElementById('manualConfirm');
 const historyWrap = document.getElementById('historyWrap');
 const historyList = document.getElementById('historyList');
 
-function showToast(msg, isError) {
-  toast.textContent = msg;
-  toast.className = 'toast show' + (isError ? ' error' : '');
-  setTimeout(() => { toast.className = 'toast'; }, 2200);
+function showToast(msg, isError = false) {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => { toastEl.className = 'toast'; }, 2500);
+}
+
+function resetProduct() {
+  currentBarcode = null;
+  productNameEl.textContent = '스캔 대기 중';
+  productBarcodeEl.textContent = '';
+  saveBtn.disabled = true;
+  saveBtn.textContent = '저장하기';
+  qtyInput.value = 1;
+  manualInput.value = '';
 }
 
 async function lookupBarcode(barcode) {
-  if (isLookingUp) return;
+  if (isLookingUp || !barcode) return;
+  barcode = barcode.trim();
+  if (!barcode) return;
+
+  // 같은 바코드 재스캔 시 저장 버튼만 다시 활성화
+  if (barcode === currentBarcode) {
+    saveBtn.disabled = false;
+    return;
+  }
+
   isLookingUp = true;
   productNameEl.textContent = '조회 중...';
   productBarcodeEl.textContent = barcode;
   saveBtn.disabled = true;
+  currentBarcode = null;
 
   try {
     const res = await fetch(`${WEB_APP_URL}?action=lookup&barcode=${encodeURIComponent(barcode)}`);
@@ -357,33 +353,27 @@ async function lookupBarcode(barcode) {
 
     if (data.success) {
       currentBarcode = barcode;
-      currentName = data.name;
       productNameEl.textContent = data.name;
       productBarcodeEl.textContent = barcode;
       saveBtn.disabled = false;
-      if (navigator.vibrate) navigator.vibrate(80);
+      if (navigator.vibrate) navigator.vibrate(60);
     } else {
-      currentBarcode = null;
-      currentName = null;
-      productNameEl.innerHTML = `<span class="status-error">등록되지 않은 상품입니다</span>`;
+      productNameEl.innerHTML = '<span class="status-error">⚠ 등록되지 않은 상품</span>';
       productBarcodeEl.textContent = barcode;
       saveBtn.disabled = true;
     }
-  } catch (err) {
-    productNameEl.innerHTML = `<span class="status-error">조회 실패 (인터넷 연결 확인)</span>`;
+  } catch {
+    productNameEl.innerHTML = '<span class="status-error">⚠ 조회 실패 (인터넷 확인)</span>';
     saveBtn.disabled = true;
   } finally {
     isLookingUp = false;
   }
 }
 
-function onScanSuccess(decodedText) {
-  if (decodedText === currentBarcode) return; // 같은 바코드 중복 무시
-  lookupBarcode(decodedText.trim());
-}
-
+// 스캐너 시작
 function startScanner() {
-  html5QrCode = new Html5Qrcode("reader", {
+  if (scanning) return;
+  scanner = new Html5Qrcode("reader", {
     formatsToSupport: [
       Html5QrcodeSupportedFormats.EAN_13,
       Html5QrcodeSupportedFormats.EAN_8,
@@ -391,64 +381,62 @@ function startScanner() {
       Html5QrcodeSupportedFormats.UPC_E,
       Html5QrcodeSupportedFormats.CODE_128,
       Html5QrcodeSupportedFormats.CODE_39,
-      Html5QrcodeSupportedFormats.QR_CODE
     ],
     verbose: false
   });
-  const config = {
-    fps: 15,
-    qrbox: { width: 280, height: 180 },
-    aspectRatio: 1.5
-  };
 
-  html5QrCode.start(
+  scanner.start(
     { facingMode: "environment" },
-    config,
-    onScanSuccess,
+    { fps: 15, qrbox: { width: 260, height: 160 }, aspectRatio: 1.6 },
+    (decoded) => { lookupBarcode(decoded); },
     () => {}
   ).then(() => {
+    scanning = true;
     startBtn.style.display = 'none';
     stopBtn.style.display = 'block';
-  }).catch((err) => {
+  }).catch(() => {
     showToast('카메라를 열 수 없습니다', true);
-    console.error(err);
   });
 }
 
+// 스캐너 중지
 function stopScanner() {
-  if (html5QrCode) {
-    html5QrCode.stop().then(() => {
-      html5QrCode.clear();
-      startBtn.style.display = 'block';
-      stopBtn.style.display = 'none';
-    }).catch(() => {});
-  }
+  if (!scanning || !scanner) return;
+  scanner.stop().then(() => {
+    scanner.clear();
+    scanner = null;
+    scanning = false;
+    startBtn.style.display = 'block';
+    stopBtn.style.display = 'none';
+  }).catch(() => {});
 }
 
 startBtn.addEventListener('click', startScanner);
 stopBtn.addEventListener('click', stopScanner);
 
+// 수량 버튼
 document.getElementById('qtyMinus').addEventListener('click', () => {
-  const val = Math.max(1, parseInt(qtyInput.value || 1) - 1);
-  qtyInput.value = val;
+  qtyInput.value = Math.max(1, parseInt(qtyInput.value || 1) - 1);
 });
-
 document.getElementById('qtyPlus').addEventListener('click', () => {
-  const val = parseInt(qtyInput.value || 1) + 1;
-  qtyInput.value = val;
+  qtyInput.value = parseInt(qtyInput.value || 1) + 1;
 });
 
-manualToggle.addEventListener('click', () => {
-  manualInput.classList.toggle('show');
-  if (manualInput.classList.contains('show')) manualInput.focus();
+// 직접 입력 - 확인 버튼
+manualConfirm.addEventListener('click', () => {
+  const v = manualInput.value.trim();
+  if (v) lookupBarcode(v);
 });
 
-manualInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && manualInput.value.trim()) {
-    lookupBarcode(manualInput.value.trim());
+// 직접 입력 - 키보드 엔터
+manualInput.addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') {
+    const v = manualInput.value.trim();
+    if (v) lookupBarcode(v);
   }
 });
 
+// 저장
 saveBtn.addEventListener('click', async () => {
   if (!currentBarcode) return;
   const qty = parseInt(qtyInput.value || 1);
@@ -463,33 +451,30 @@ saveBtn.addEventListener('click', async () => {
 
     if (data.success) {
       showToast(`✓ ${data.name} 누적 ${data.total}개`);
-      history.unshift({ name: data.name, qty: qty, total: data.total });
-      if (history.length > 5) history.pop();
+      recentHistory.unshift({ name: data.name, added: qty, total: data.total });
+      if (recentHistory.length > 5) recentHistory.pop();
       renderHistory();
-
-      // 초기화
-      currentBarcode = null;
-      currentName = null;
-      productNameEl.textContent = '스캔 대기 중';
-      productBarcodeEl.textContent = '';
-      qtyInput.value = 1;
-      manualInput.value = '';
+      resetProduct();
     } else {
       showToast(data.message || '저장 실패', true);
+      saveBtn.disabled = false;
+      saveBtn.textContent = '저장하기';
     }
-  } catch (err) {
-    showToast('저장 실패 (인터넷 연결 확인)', true);
-  } finally {
-    saveBtn.disabled = true;
+  } catch {
+    showToast('저장 실패 (인터넷 확인)', true);
+    saveBtn.disabled = false;
     saveBtn.textContent = '저장하기';
   }
 });
 
 function renderHistory() {
-  if (history.length === 0) return;
+  if (recentHistory.length === 0) return;
   historyWrap.style.display = 'block';
-  historyList.innerHTML = history.map(h =>
-    `<div class="history-item"><span class="history-name">${h.name} (+${h.qty})</span><span class="history-qty">누적 ${h.total}개</span></div>`
+  historyList.innerHTML = recentHistory.map(h =>
+    `<div class="history-item">
+      <span class="history-name">${h.name} <span style="color:var(--muted);font-weight:400;font-size:12px;">(+${h.added})</span></span>
+      <span class="history-qty">누적 ${h.total}개</span>
+    </div>`
   ).join('');
 }
 </script>
